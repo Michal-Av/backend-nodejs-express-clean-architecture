@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const weather = require('./weather.routes')
-const city = require('./city.routes');
-
+const todo = require('./todo.routes');
+const user = require("./user.routes");
 
 router.get("/status", (_, res) => res.status(200).json({ status: "OK" }));
 
-router.use('/api/weather', weather);
-router.use('/api/city', city);
+router.use('/api/todo', todo);
+router.use("/auth", user);
 
 module.exports = router;
