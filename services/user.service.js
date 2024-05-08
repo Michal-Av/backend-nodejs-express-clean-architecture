@@ -4,6 +4,7 @@ const {
     getUserByEmail,
     createUser,
     getUserById,
+    updateUserPassword
 } = require('../data-access/user.da');
 
 exports.getUserByEmailUC = async (email) => {
@@ -16,4 +17,8 @@ exports.createUserUC = async (userData) => {
 
 exports.getUserByIdUC = async (userId) => {
     return await getUserById(userId);
+};
+
+exports.updateUserPasswordUC = async (email, pass) => {
+    return await updateUserPassword(email, pass);
 };

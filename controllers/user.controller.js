@@ -3,6 +3,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userService = require("../services/user.service");
+const mailService = require("../utils/mailService")
 
 async function signup(req, res) {
   const { username, email, password } = req.body;
@@ -71,8 +72,45 @@ async function logout(req, res) {
   res.status(200).json({ message: "Logout successful" });
 }
 
+async function forgotPassword(req, res) {
+  const { email } = req.body; // Assuming email is sent in the request body
+
+  try {
+    // // Generate a reset password token
+    const resetToken = jwt.sign({ email }, process.env.RESET_TOKEN_SECRET, { expiresIn: '1h' });
+
+    // Send reset password email
+    await mailService.sendResetPasswordEmail(email, resetToken);
+
+    res.status(200).json({ message: 'Reset password email sent successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while processing your request' });
+  }
+}
+
+
+async function resetPassword(req, res) {
+  const { token, newPassword } = req.body;
+  try {
+  // Verify the reset password token
+  const decodedToken = jwt.verify(token, process.env.RESET_TOKEN_SECRET);
+  
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update user's password in the database
+  await userService.updateUserPasswordUC(decodedToken.email, hashedPassword);
+  
+  res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while processing your request' });
+  }
+}
+
 module.exports = {
   signup,
   login,
   logout,
+  forgotPassword,
+  resetPassword,
 };

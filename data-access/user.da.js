@@ -14,8 +14,15 @@ async function getUserById(userId) {
     return await userModel.findById(userId);
 }
 
+async function updateUserPassword(email, newPasswordHash) {
+    // Update user's password in the database
+    await userModel.findOneAndUpdate({ email }, { password: newPasswordHash });
+  }
+  
+
 module.exports = {
     getUserByEmail,
     createUser,
     getUserById,
+    updateUserPassword
 };
